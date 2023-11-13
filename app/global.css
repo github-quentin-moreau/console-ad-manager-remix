@@ -1,0 +1,165 @@
+@import "@teads/lib-design-system-react/dist/tds.css";
+@import "@teads/lib-design-system-style/dist/tds.css";
+@import "@teads/lib-design-system-react-scoped/dist/tds.css";
+
+html {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+}
+
+body {
+  background: #eaedf2;
+  margin: 0;
+  font-family: roboto, lato, helvetica, arial, sans-serif;
+}
+
+#root {
+  height: calc(100vh - 45px);
+  margin-top: 45px;
+  min-height: calc(100vh - 45px);
+}
+
+.app {
+    height: 100%;
+  }
+  
+  .menu {
+    height: 100%;
+    position: relative;
+    display: flex;
+    gap: 0;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #ffffff;
+  }
+  
+  
+  .contentContainer {
+    height: calc(100vh - 100vh);
+    overflow-y: auto;
+    min-height: calc(100vh - 50vh);
+  }
+
+  
+  .separator {
+    border-left: 1px solid /*dynamic value*/;
+  }
+  
+  .disabled {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+  
+  .routerButton {
+    height: 20px;
+    line-height: 20px;
+    padding: 10px;
+    text-decoration: none;
+    color: #2563EB;
+    cursor: pointer;
+    user-select: none;
+    background-color: #fff;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    transition: background-color 0.2s ease-in-out;
+  }
+
+  .routerButton:hover {
+    background-color: #f6f6f6;
+  }
+
+  
+  .routerButton.selected {
+    color: white;
+    background: grey
+  }
+  
+  .loadingContainer {
+    width: 100%;
+    height: 100%;
+    display: flex;
+  }
+  
+  .loadingIndicator {
+    margin: auto;
+  }
+  
+  .helpButtonContainer {
+    position: absolute;
+    right: 0;
+    color: #000;
+  }
+  
+  .helpButton {
+    display: flex;
+    align-items: center;
+  }
+  
+  .helpIcon {
+    margin-left: 5px;
+  }
+
+  .homeContainer {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .headerPositioning {
+    display: flex;
+    width: 100%;
+  }
+  
+  .container {
+    width: 100%;
+    padding: 20px;
+    margin: auto;
+  }
+  
+  .titleContainer {
+    width: 100%;
+    padding: 20px;
+    margin: auto;
+  }
+  
+  .cardTitleSpacingBottom {
+    margin-bottom: 10px;
+  }
+  
+  .customColor {
+    color: blue
+  }
+  
+  .disabledCard {
+    opacity: 0.5;
+  }
+  
+  .noDecoration {
+    text-decoration: none;
+  }
+  
+  .cardMedia {
+    height: 205px;
+    object-fit: contain;
+    transform: scale(0.8);
+  }
+  
+  .cardText {
+    min-height: 50px;
+  }
+  
+  .cardContainer {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 10px;
+    gap: 10px;
+    background-color: #fff;
+  }

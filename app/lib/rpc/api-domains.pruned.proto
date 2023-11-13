@@ -1,0 +1,1358 @@
+// Consolidated by protomerge from https://github.com/ebuzzing/service-api-domains/commits/55da5d196816b697a9c12e1424028bb2b43cfa8f
+// Transformed by prototransform prune AcknowledgeCampaignSkeletonCreationToSalesforce ActivateFeatureForSeat AddFirstPartySegmentToWhitelistForSeat AddGrapeshotBrandSuitabilitySegmentForBuyerSeat CreateBuyerEntity CreateCampaignSkeletonsFromSalesforceOpportunity CreateClientSeatForBuyer CreateCustomTargetingRuleForCampaign CreateInternalSeatForBuyer CreateIoBuyerSeatForEntity CreateManagedBuyerSeatForEntity CreateSelfServedBuyerSeatForEntity DeactivateFeatureForSeat DeleteGrapeshotBrandSuitabilitySegmentsForBuyerSeat DisableBuyerSeat EnableBuyerSeat FindActiveAccountsForProfile FindBuyerPixelsForAdvertiser FindBuyerSeatForEntity FindBuyerSeatForSalesforceSeat FindCampaignsForSalesforceOpportunity FindCampaignsForSalesforceOpportunityAndProfile FindGrapeshotBrandSuitabilitySegmentsInCommonForBuyerSeats FindProfileForEmailAnonymously FindWhitelistedAdvertiserFirstPartySegmentsForSeat GetAccount GetAdvertiserFirstPartySegments GetAllCustomTargetingReasons GetBuyerSeat GetOffice GetSalesforceOpportunity GrantAdminRoleForBuyer ListCustomTargetingRulesForCampaign ListOffices MarkTeadsFinanceApprovalFilledForSeat MigrateCampaignToManagedService RemoveFirstPartySegmentFromWhitelistForSeat RevokeAdminRoleForBuyer SearchAdvertiserFirstPartySegments SearchAdvertisersForSeatManagement SearchAgenciesForSeatManagement SearchBuyerSeats SearchCampaigns SearchCampaignsEligibleForManagedServiceMigration SetFeeForClientSeat SynchronizeCampaignFromSalesforceOpportunity TransitionIoBuyerSeatToManaged TransitionIoBuyerSeatToSelfServed TransitionManagedBuyerSeatToSelfServed TransitionSelfServedBuyerSeatToManaged UpdateBuyerSeatFee UpdateBuyerSeatName FindLineItemsForCampaign CanAccountEditCampaign
+syntax = "proto2";
+package teads.api;
+import "google/protobuf/any.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
+option java_multiple_files = true;
+// @section Commercial
+message AcknowledgeCampaignSkeletonCreationToSalesforceRequest {
+  required SecurityContext security_context = 1;
+  required int64 profile_id = 2;
+  required string opportunity_id = 3;
+  repeated SalesforceOpportunityLineItem opportunity_line_items = 4;
+  message SalesforceOpportunityLineItem {
+    required string id = 1;
+    required int64 campaign_id = 2;
+  }
+}
+// @section Commercial
+message AcknowledgeCampaignSkeletonCreationToSalesforceResponse {
+}
+// @section Advertiser
+message ActivateFeatureForSeatRequest {
+  required SecurityContext security_context = 1;
+  required int64 seat_id = 2;
+  required SeatFeature seat_feature = 3;
+}
+// @section Advertiser
+message ActivateFeatureForSeatResponse {
+}
+// @section Advertiser
+message AddFirstPartySegmentToWhitelistForSeatRequest {
+  required SecurityContext security_context = 1;
+  required AdvertiserFirstPartySegment segment = 2;
+  required int64 entity_id = 3;
+  message AdvertiserFirstPartySegment {
+    required AdvertiserFirstPartySegmentProvider segment_provider = 1;
+    required int64 provider_segment_id = 2;
+  }
+}
+// @section Advertiser
+message AddFirstPartySegmentToWhitelistForSeatResponse {
+}
+// @section Brand Safety
+message AddGrapeshotBrandSuitabilitySegmentForBuyerSeatRequest {
+  required SecurityContext security_context = 1;
+  // buyer_seat_id refers to a seat persisted in teads_connect.seat
+  required int64 buyer_seat_id = 2;
+  required string segment_code = 3;
+}
+// @section Brand Safety
+message AddGrapeshotBrandSuitabilitySegmentForBuyerSeatResponse {
+}
+// @section Campaign
+message CanAccountEditCampaignRequest {
+  required SecurityContext security_context = 1;
+  required int64 campaign_id = 2;
+  required Account account = 3;
+  message Account {
+    required int64 entity_id = 1;
+    required int64 profile_id = 2;
+  }
+}
+// @section Campaign
+message CanAccountEditCampaignResponse {
+  required bool can_edit = 1;
+}
+// @section Account
+message CreateBuyerEntityRequest {
+  required SecurityContext security_context = 1;
+  required int64 office_id = 2;
+  oneof buyer_id {
+    int64 agency_id = 3;
+    int64 advertiser_id = 4;
+  }
+  optional string entity_name = 5;
+}
+// @section Account
+message CreateBuyerEntityResponse {
+  required int64 entity_id = 1;
+}
+// @section Campaign
+message CreateCampaignSkeletonsFromSalesforceOpportunityRequest {
+  required SecurityContext security_context = 1;
+  required string salesforce_opportunity_id = 2;
+  repeated CampaignObjective campaign_objectives = 3;
+  required int64 seat_entity_id = 4;
+  required int64 profile_id = 5;
+  optional bool manager_compatibility_mode = 6 [default = false];
+  repeated AdvertisingSolutionId advertising_solution_ids = 7;
+}
+// @section Campaign
+message CreateCampaignSkeletonsFromSalesforceOpportunityResponse {
+  repeated CreatedCampaign created_campaigns = 1;
+  message CreatedCampaign {
+    required CampaignObjective campaign_objective = 1;
+    required int64 campaign_id = 2;
+    repeated LineItemDetail line_item_details = 3;
+  }
+  message LineItemDetail {
+    required string id = 1;
+  }
+}
+// @section Advertiser
+message CreateClientSeatForBuyerRequest {
+  required SecurityContext security_context = 1;
+  required int64 office_id = 2;
+  required int64 entity_id = 3;
+  oneof buyer_id {
+    int64 agency_id = 4;
+    int64 advertiser_id = 5;
+  }
+  required string seat_name = 6;
+  required double fee = 7;
+  required string salesforce_contract_id = 8;
+  repeated string client_emails = 9;
+  required string salesforce_seat_id = 10;
+  // Used to check that we don't roll back to a previous version during updates
+  required int32 salesforce_contract_version = 11;
+}
+// @section Advertiser
+message CreateClientSeatForBuyerResponse {
+  required int64 seat_id = 1;
+}
+// @section Campaign
+message CreateCustomTargetingRuleForCampaignRequest {
+  required SecurityContext security_context = 1;
+  required int64 campaign_id = 2;
+  required string name = 3;
+  required string tbl_string = 4;
+  required CustomTargetingRuleAudiencesDeliveryType demographic_audiences_delivery_type = 5;
+  required CustomTargetingRuleAudiencesAccuracyLevel other_audiences_accuracy_level = 6;
+  required bool cookieless_criteria_only = 7;
+  required string description = 8;
+  required int64 reason_id = 9;
+  optional CustomTargetingEnvironmentChannel channel = 10;
+}
+// @section Campaign
+message CreateCustomTargetingRuleForCampaignResponse {
+  required int64 rule_id = 1;
+}
+// @section Advertiser
+message CreateInternalSeatForBuyerRequest {
+  required SecurityContext security_context = 1;
+  required int64 office_id = 2;
+  required int64 entity_id = 3;
+  oneof buyer_id {
+    int64 agency_id = 4;
+    int64 advertiser_id = 5;
+  }
+  required string seat_name = 6;
+  required double fee = 7;
+  optional string multiple_seats_reason = 8;
+}
+// @section Advertiser
+message CreateInternalSeatForBuyerResponse {
+  required int64 seat_id = 1;
+}
+// @section Advertiser
+message CreateIoBuyerSeatForEntityRequest {
+  required SecurityContext security_context = 1;
+  required int64 office_id = 2;
+  required int64 entity_id = 3;
+  oneof buyer_id {
+    int64 agency_id = 4;
+    int64 advertiser_id = 5;
+  }
+  optional bool can_set_multiple_pixels = 6 [default = false];
+  optional double fee = 7 [default = 0.000000];
+  optional string seat_name = 8; // defaults to the buyer name
+  optional string multiple_seats_reason = 9;
+}
+// @section Advertiser
+message CreateIoBuyerSeatForEntityResponse {
+  required int64 seat_id = 1;
+}
+// @section Advertiser
+message CreateManagedBuyerSeatForEntityRequest {
+  required SecurityContext security_context = 1;
+  required int64 office_id = 2;
+  required int64 entity_id = 3;
+  required MsaType msa_type = 4;
+  required double managed_fee = 5;
+  oneof buyer_id {
+    int64 agency_id = 6;
+    int64 advertiser_id = 7;
+  }
+  required string salesforce_contract_id = 8;
+  optional string seat_name = 9; // defaults to the buyer name
+  optional string multiple_seats_reason = 10;
+}
+// @section Advertiser
+message CreateManagedBuyerSeatForEntityResponse {
+  required int64 seat_id = 1;
+}
+// @section Advertiser
+message CreateSelfServedBuyerSeatForEntityRequest {
+  required SecurityContext security_context = 1;
+  required int64 office_id = 2;
+  required int64 entity_id = 3;
+  required MsaType msa_type = 4;
+  required double platform_fee = 5;
+  oneof buyer_id {
+    int64 agency_id = 6;
+    int64 advertiser_id = 7;
+  }
+  required string salesforce_contract_id = 8;
+  optional string seat_name = 9; // defaults to the buyer name
+  optional string multiple_seats_reason = 10;
+}
+// @section Advertiser
+message CreateSelfServedBuyerSeatForEntityResponse {
+  required int64 seat_id = 1;
+}
+// @section Advertiser
+message DeactivateFeatureForSeatRequest {
+  required SecurityContext security_context = 1;
+  required int64 seat_id = 2;
+  required SeatFeature seat_feature = 3;
+}
+// @section Advertiser
+message DeactivateFeatureForSeatResponse {
+}
+// @section Brand Safety
+message DeleteGrapeshotBrandSuitabilitySegmentsForBuyerSeatRequest {
+  required SecurityContext security_context = 1;
+  // buyer_seat_id refers to a seat persisted in teads_connect.seat
+  required int64 buyer_seat_id = 2;
+  repeated string segment_codes = 3;
+}
+// @section Brand Safety
+message DeleteGrapeshotBrandSuitabilitySegmentsForBuyerSeatResponse {
+}
+// @section Advertiser
+message DisableBuyerSeatRequest {
+  required SecurityContext security_context = 1;
+  required int64 seat_id = 2;
+}
+// @section Advertiser
+message DisableBuyerSeatResponse {
+}
+// @section Advertiser
+message EnableBuyerSeatRequest {
+  required SecurityContext security_context = 1;
+  required int64 seat_id = 2;
+}
+// @section Advertiser
+message EnableBuyerSeatResponse {
+}
+// @section Account
+message FindActiveAccountsForProfileRequest {
+  required SecurityContext security_context = 1;
+  required int64 profile_id = 2;
+}
+// @section Account
+message FindActiveAccountsForProfileResponse {
+  repeated Account accounts = 1;
+  message Account {
+    required AccountId account_id = 1;
+    required string name = 2;
+    required AccountType account_type = 3;
+    optional string parent_name = 4;
+  }
+  message AccountId {
+    required int64 profile_id = 1;
+    required int64 entity_id = 2;
+  }
+}
+// @section Advertiser
+message FindBuyerPixelsForAdvertiserRequest {
+  required SecurityContext security_context = 1;
+  required int64 advertiser_id = 2;
+  // Search on Name and Id
+  optional string search = 3;
+}
+// @section Advertiser
+message FindBuyerPixelsForAdvertiserResponse {
+  repeated BuyerPixelsByEntity buyer_pixels_by_entity = 2;
+  message BuyerPixel {
+    required int64 id = 1;
+    required string name = 2;
+    optional google.protobuf.Timestamp last_activity_date = 3;
+  }
+  message BuyerPixelsByEntity {
+    required int64 entity_id = 1;
+    required string seat_name = 2;
+    repeated BuyerPixel buyer_pixels = 3;
+  }
+  reserved 1;
+}
+// @section Advertiser
+message FindBuyerSeatForEntityRequest {
+  required SecurityContext security_context = 1;
+  required int64 entity_id = 2;
+}
+// @section Advertiser
+message FindBuyerSeatForEntityResponse {
+  required int64 seat_id = 1;
+  required string name = 2;
+  required double fee = 3;
+  required BuyerSeatStatus status = 4;
+  optional string salesforce_contract_id = 5;
+  required BuyerServiceLevel service_level = 8;
+  optional string salesforce_seat_id = 10;
+  repeated SeatFeature activated_seat_settings = 18;
+  required bool can_run_internal_test_campaign = 19;
+  reserved 6, 7, 9, 11, 12, 13, 14, 15, 16, 17;
+}
+// @section Advertiser
+message FindBuyerSeatForSalesforceSeatRequest {
+  required SecurityContext security_context = 1;
+  required string salesforce_seat_id = 2;
+}
+// @section Advertiser
+message FindBuyerSeatForSalesforceSeatResponse {
+  required int64 seat_id = 1;
+  required int64 entity_id = 2;
+  required int64 office_id = 3;
+  required string name = 4;
+  required BuyerSeatType type = 5;
+  required BuyerSeatStatus status = 6;
+  required BuyerServiceLevel service_level = 7;
+  required double fee = 8;
+  optional string salesforce_contract_id = 9;
+  optional int32 salesforce_contract_version = 10;
+}
+// @section Campaign
+message FindCampaignsForSalesforceOpportunityAndProfileRequest {
+  required SecurityContext security_context = 1;
+  required string opportunity_id = 2;
+  required CampaignObjective campaign_objective = 3;
+  required int64 profile_id = 4;
+  optional AdvertisingSolutionId advertising_solution_id = 5;
+}
+// @section Campaign
+message FindCampaignsForSalesforceOpportunityAndProfileResponse {
+  repeated CampaignInfo campaigns = 1;
+  message CampaignInfo {
+    required int64 campaign_id = 1;
+    required string campaign_name = 2;
+    optional int64 seat_id = 3;
+    optional string entity_name = 4;
+    required int64 office_id = 5;
+    required string office_name = 6;
+    repeated CampaignProfilePermission campaign_profile_permissions = 7;
+    required double budget = 8;
+    optional double free_budget = 9;
+    required TimeInterval time_interval = 10;
+    repeated InsertionOrderLine insertion_order_lines = 11;
+    required bool is_created_by_salesforce = 12;
+    optional bool is_moat_unsampled = 13;
+  }
+  message InsertionOrderLine {
+    required int64 id = 1;
+    required string name = 2;
+    optional string salesforce_opportunity_line_item_id = 3;
+    optional double budget = 4;
+    optional double free_budget = 5;
+    required TimeInterval time_interval = 6;
+    optional InsertionOrderLineBillingModel billing_model = 7;
+    optional double billing_model_rate = 8;
+    optional string billing_event = 9;
+    optional InsertionOrderLineAuctionType auction_type = 10;
+    optional InsertionOrderLineCreativeTypeFamily creative_type_family = 11;
+    optional bool is_guaranteed = 12;
+  }
+  message TimeInterval {
+    required google.protobuf.Timestamp start_date = 1;
+    required google.protobuf.Timestamp end_date = 2;
+  }
+  enum CampaignProfilePermission {
+    CAMPAIGN_PROFILE_PERMISSION_VIEW = 1;
+    CAMPAIGN_PROFILE_PERMISSION_MANAGE = 2;
+  }
+}
+// @section Campaign
+message FindCampaignsForSalesforceOpportunityRequest {
+  required SecurityContext security_context = 1;
+  required string opportunity_id = 2;
+  required CampaignObjective campaign_objective = 3;
+  optional AdvertisingSolutionId advertising_solution_id = 4;
+}
+// @section Campaign
+message FindCampaignsForSalesforceOpportunityResponse {
+  repeated CampaignInfo campaigns = 1;
+  message CampaignInfo {
+    required int64 campaign_id = 1;
+    required string campaign_name = 2;
+    optional int64 seat_id = 3;
+    optional string entity_name = 4;
+    required int64 office_id = 5;
+    required string office_name = 6;
+  }
+}
+// @section Brand Safety
+message FindGrapeshotBrandSuitabilitySegmentsInCommonForBuyerSeatsRequest {
+  required SecurityContext security_context = 1;
+  // buyer_seat_ids refers to seats persisted in teads_connect.seat
+  repeated int64 buyer_seat_ids = 2;
+}
+// @section Brand Safety
+message FindGrapeshotBrandSuitabilitySegmentsInCommonForBuyerSeatsResponse {
+  repeated GrapeshotBrandSuitabilitySegment segments = 1;
+  message GrapeshotBrandSuitabilitySegment {
+    required string segment_code = 1;
+    optional string friendly_name = 2;
+    required bool is_available_to_all_seats = 3;
+  }
+}
+// @section Campaign
+message FindLineItemsForCampaignRequest {
+  required SecurityContext security_context = 1;
+  required int64 campaign_id = 2;
+}
+// @section Campaign
+message FindLineItemsForCampaignResponse {
+  repeated LineItem line_items = 1;
+  message LineItem {
+    required int64 id = 1;
+    required string name = 2;
+    required int64 insertion_order_line_id = 3;
+  }
+}
+// @section Account
+message FindProfileForEmailAnonymouslyRequest {
+  required string email = 1;
+}
+// @section Account
+message FindProfileForEmailAnonymouslyResponse {
+  required int64 profile_id = 1;
+  required string email = 2;
+  // Sorted so that the first entry will be the "default" one
+  repeated Account accounts = 4;
+  required ProfileStatus status = 5;
+  optional string firstname = 8;
+  optional string lastname = 9;
+  optional string locale = 10; // language_TERRITORY: en_US, fr_FR, es_ES, ...
+  oneof profile_credentials {
+    Credentials deprecated_credentials = 11;
+    Credentials cognito_credentials = 12;
+  }
+  message Account {
+    required int64 entity_id = 1;
+    // "Publisher Self-Served", "Teads Innovation", "Innovation feature team Platform"
+    repeated string roles = 2;
+    required EntityType entity_type = 3;
+  }
+  message Credentials {
+    optional SAMLCredentials saml_credentials = 6;
+    optional PasswordCredentials password_credentials = 7;
+  }
+  message PasswordCredentials {
+    required bool mfa_validation_required = 1;
+  }
+  message SAMLCredentials {
+    required string identity_provider_name = 1;
+  }
+  reserved 3, 6, 7;
+}
+// @section Advertiser
+message FindWhitelistedAdvertiserFirstPartySegmentsForSeatRequest {
+  required SecurityContext security_context = 1;
+  required int64 entity_id = 2;
+}
+// @section Advertiser
+message FindWhitelistedAdvertiserFirstPartySegmentsForSeatResponse {
+  repeated AdvertiserFirstPartySegment segments = 1;
+  message AdvertiserFirstPartySegment {
+    required int64 segment_id = 1;
+    required AdvertiserFirstPartySegmentProvider segment_provider = 2;
+  }
+}
+// @section Account
+message GetAccountRequest {
+  required SecurityContext security_context = 1;
+  required AccountId account_id = 2;
+  message AccountId {
+    required int64 entity_id = 1;
+    required int64 profile_id = 2;
+  }
+}
+// @section Account
+message GetAccountResponse {
+  required string entity_name = 1;
+  required AccountType account_type = 2;
+  required Profile profile = 3;
+  // "Publisher Self-Served", "Teads Innovation", "Innovation feature team Platform"
+  repeated string roles = 4;
+  // For each permission, the authorized resource types. Example:
+  //  "manage" -> ("connection", "placement"),
+  //  "view" -> ("connection", "invoice", "mrg-contract", "placement")
+  map<string, ResourceTypes> resource_types_by_permission = 5;
+  required EntityType entity_type = 6;
+  required string entity_currency = 7;
+  message Profile {
+    required string email = 1;
+    optional string firstname = 2;
+    optional string lastname = 3;
+    required string locale = 4; // language_TERRITORY: en_US, fr_FR, es_ES, ...
+    optional string timezone = 5; // Europe/Paris, Europe/Berlin, US/Central, ...
+    required ProfileStatus status = 6;
+    optional google.protobuf.Timestamp created_at = 7;
+  }
+  message ResourceTypes {
+    repeated string values = 1;
+  }
+}
+// @section Users Data
+message GetAdvertiserFirstPartySegmentsRequest {
+  required SecurityContext security_context = 1;
+  repeated Mapping mappings = 2;
+  message Mapping {
+    required string segment_provider = 1;
+    repeated string provider_segment_ids = 2;
+  }
+}
+// @section Users Data
+message GetAdvertiserFirstPartySegmentsResponse {
+  repeated AdvertiserFirstPartySegment segments = 1;
+  message AdvertiserFirstPartySegment {
+    required int64 provider_segment_id = 1;
+    required string segment_label = 2;
+    required string segment_provider = 3;
+    optional int64 advertiser_id = 4;
+    optional string advertiser_name = 5;
+    optional bool is_ctv_usable = 6;
+  }
+}
+// @section Campaign
+message GetAllCustomTargetingReasonsRequest {
+  required SecurityContext security_context = 1;
+  optional bool active_only = 2 [default = true];
+}
+// @section Campaign
+message GetAllCustomTargetingReasonsResponse {
+  repeated Reason reasons = 1;
+  message Reason {
+    required int64 id = 1;
+    required string label = 2;
+  }
+}
+// @section Advertiser
+message GetBuyerSeatRequest {
+  required SecurityContext security_context = 1;
+  required int64 seat_id = 2;
+}
+// @section Advertiser
+message GetBuyerSeatResponse {
+  required int64 seat_id = 1;
+  required OfficeInfo office = 2;
+  required string name = 3;
+  required BuyerServiceLevel service_level = 4;
+  required BuyerSeatStatus status = 5;
+  optional MsaType msa_type = 6;
+  required BuyerSeatType type = 7;
+  required double fee = 8;
+  repeated SeatHistoryItemInfo history_items = 9;
+  required google.protobuf.Timestamp created_at = 10;
+  required int64 entity_id = 11;
+  required BuyerSeatStatusFlag client_msa = 12;
+  required BuyerSeatStatusFlag client_billing_details = 13;
+  required BuyerSeatStatusFlag teads_finance_approval = 14;
+  optional string salesforce_id = 15;
+  optional string contract_id = 16;
+  oneof buyer_id {
+    int64 agency_id = 17;
+    int64 advertiser_id = 18;
+  }
+  optional string salesforce_seat_id = 19;
+  message OfficeInfo {
+    required int64 office_id = 1;
+    required string office_name = 2;
+  }
+  message Profile {
+    required int64 profile_id = 1;
+    required string email = 2;
+  }
+  message SeatHistoryItemInfo {
+    required int64 id = 1;
+    required int64 seat_id = 2;
+    required Profile profile = 3;
+    required string resource_name = 4;
+    optional string old_value = 5;
+    required string new_value = 6;
+    required google.protobuf.Timestamp created_at = 7;
+  }
+}
+// @section Account
+message GetOfficeRequest {
+  required SecurityContext security_context = 1;
+  required int64 office_id = 2;
+}
+// @section Account
+message GetOfficeResponse {
+  required int64 office_id = 1;
+  required string office_name = 2;
+  optional string office_address = 3;
+}
+// @section Commercial
+message GetSalesforceOpportunityRequest {
+  required SecurityContext security_context = 1;
+  required string opportunity_id = 2;
+}
+// @section Commercial
+message GetSalesforceOpportunityResponse {
+  required string opportunity_id = 1;
+  required string name = 2;
+  required int64 agency_id = 3;
+  required int64 advertiser_id = 4;
+  required int64 office_id = 6;
+  // The 3-letter currency code defined in ISO 4217
+  required string opportunity_currency = 7;
+  // JDK TimeZones compatible with TimeZone.getTimeZone
+  required string opportunity_timezone = 8;
+  required string invoice_reference_number = 15;
+  // platform id of the category
+  required int64 iab_category_id = 16;
+  repeated SalesforceOpportunityLineItem opportunity_line_items = 17;
+  required bool can_be_synchronized = 19;
+  optional string advertiser_name = 20;
+  optional string agency_name = 21;
+  required string seller_email = 22;
+  optional bool is_moat_unsampled = 23 [default = false];
+  optional Version version = 24 [default = VERSION_LEGACY_MANAGED];
+  message SalesforceOpportunityLineItem {
+    required string id = 1;
+    required string name = 2;
+    required Objective objective = 3;
+    required google.protobuf.Timestamp start_date = 4;
+    required google.protobuf.Timestamp end_date = 5;
+    required double budget = 6;
+    required int64 billable_volume = 7;
+    required double free_budget = 8;
+    required int64 free_billable_volume = 9;
+    required string salesforce_geo = 10;
+    optional string salesforce_creatives = 11;
+    optional BillingModel billing_model = 12;
+    optional double billing_model_rate = 13;
+    optional string billing_event = 14;
+    optional AuctionType auction_type = 15;
+    optional CreativeTypeFamily creative_type_family = 16;
+    optional bool is_guaranteed = 17;
+    required AdvertisingSolutionId advertising_solution_id = 18;
+  }
+  enum AdvertisingSolutionId {
+    ADVERTISING_SOLUTION_ID_AWARENESS = 1;
+    ADVERTISING_SOLUTION_ID_TA_CLICKS = 2;
+    ADVERTISING_SOLUTION_ID_TA_VISITS = 3;
+    ADVERTISING_SOLUTION_ID_TA_MIXED = 4;
+    ADVERTISING_SOLUTION_ID_WEBSITE_CONVERSIONS = 5;
+    ADVERTISING_SOLUTION_ID_SEAMLESS_COMMERCE = 6;
+    ADVERTISING_SOLUTION_ID_TA_CLICKS_GUARANTEED_CPC = 7;
+    ADVERTISING_SOLUTION_ID_TA_VISITS_GUARANTEED_CPC = 8;
+  }
+  enum AuctionType {
+    AUCTION_TYPE_FIXED = 1;
+    AUCTION_TYPE_DYNAMIC = 2;
+  }
+  enum BillingModel {
+    BILLING_MODEL_CPM = 1;
+    BILLING_MODEL_VCPM = 2;
+    BILLING_MODEL_CPCV = 3;
+    BILLING_MODEL_CPC = 4;
+    BILLING_MODEL_CPV = 5;
+  }
+  enum CreativeTypeFamily {
+    CREATIVE_TYPE_FAMILY_VIDEO = 1;
+    CREATIVE_TYPE_FAMILY_DISPLAY = 2;
+  }
+  enum Objective {
+    OBJECTIVE_TRAFFIC_ACQUISITION = 1;
+    OBJECTIVE_BRANDING = 2;
+    OBJECTIVE_CONVERSIONS = 3;
+  }
+  enum Version {
+    VERSION_LEGACY_MANAGED = 1;
+    VERSION_TAM_V1 = 2;
+    VERSION_TAM_V2 = 3;
+  }
+  reserved 5, 18;
+}
+// @section Account
+message GrantAdminRoleForBuyerRequest {
+  required SecurityContext security_context = 1;
+  required int64 profile_id = 2;
+  required int64 entity_id = 3;
+}
+// @section Account
+message GrantAdminRoleForBuyerResponse {
+}
+// @section Campaign
+message ListCustomTargetingRulesForCampaignRequest {
+  required SecurityContext security_context = 1;
+  required int64 campaign_id = 2;
+}
+// @section Campaign
+message ListCustomTargetingRulesForCampaignResponse {
+  repeated Rule rules = 1;
+  message Reason {
+    required int64 id = 1;
+    required string label = 2;
+  }
+  message Rule {
+    required int64 id = 1;
+    required string name = 3;
+    required string tbl_string = 4;
+    required CustomTargetingRuleAudiencesDeliveryType demographic_audiences_delivery_type = 5;
+    required CustomTargetingRuleAudiencesAccuracyLevel other_audiences_accuracy_level = 6;
+    required bool cookieless_criteria_only = 7;
+    required string description = 8;
+    required Reason reason = 9;
+    optional CustomTargetingEnvironmentChannel channel = 10;
+  }
+}
+// @section Account
+message ListOfficesRequest {
+  required SecurityContext security_context = 1;
+}
+// @section Account
+message ListOfficesResponse {
+  repeated ListOffice offices = 1;
+  message ListOffice {
+    required int64 office_id = 1;
+    required string office_name = 2;
+  }
+}
+// @section Advertiser
+message MarkTeadsFinanceApprovalFilledForSeatRequest {
+  required SecurityContext security_context = 1;
+  required int64 seat_id = 2;
+}
+// @section Advertiser
+message MarkTeadsFinanceApprovalFilledForSeatResponse {
+  required BuyerSeatStatus seat_status = 1;
+}
+// @section Campaign
+message MigrateCampaignToManagedServiceRequest {
+  required SecurityContext security_context = 1;
+  required int64 campaign_id = 2;
+  required CampaignMigrationReason reason = 3;
+  optional string details = 4;
+}
+// @section Campaign
+message MigrateCampaignToManagedServiceResponse {
+}
+// @section Commons
+message Page {
+  optional int32 index = 1 [default = 0];
+  optional int32 size = 2;
+}
+// @section Commons
+message Pagination {
+  required int32 index = 1;
+  required int32 size = 2;
+  required int32 total_elements = 3;
+  required int32 total_pages = 4;
+}
+// @section Advertiser
+message RemoveFirstPartySegmentFromWhitelistForSeatRequest {
+  required SecurityContext security_context = 1;
+  required AdvertiserFirstPartySegment segment = 2;
+  required int64 entity_id = 3;
+  message AdvertiserFirstPartySegment {
+    required AdvertiserFirstPartySegmentProvider segment_provider = 1;
+    required int64 provider_segment_id = 2;
+  }
+}
+// @section Advertiser
+message RemoveFirstPartySegmentFromWhitelistForSeatResponse {
+}
+// @section Account
+message RevokeAdminRoleForBuyerRequest {
+  required SecurityContext security_context = 1;
+  required int64 profile_id = 2;
+  required int64 entity_id = 3;
+}
+// @section Account
+message RevokeAdminRoleForBuyerResponse {
+}
+// @section Users Data
+message SearchAdvertiserFirstPartySegmentsRequest {
+  required SecurityContext security_context = 1;
+  optional string search = 2;
+  required Page page = 3;
+  optional int64 advertiser_id = 4;
+}
+// @section Users Data
+message SearchAdvertiserFirstPartySegmentsResponse {
+  repeated AdvertiserFirstPartySegment segments = 1;
+  required int32 total = 2;
+  message AdvertiserFirstPartySegment {
+    required int64 provider_segment_id = 1;
+    required string segment_label = 2;
+    required string segment_provider = 3;
+    optional int64 advertiser_id = 4;
+  }
+}
+// @section Advertiser
+message SearchAdvertisersForSeatManagementRequest {
+  required SecurityContext security_context = 1;
+  required int64 office_id = 2;
+  optional string search = 3;
+  // The page number is set to 0 if not specified
+  // The page size is set to 100 if not specified
+  required Page page = 4;
+}
+// @section Advertiser
+message SearchAdvertisersForSeatManagementResponse {
+  repeated AdvertiserForSeatManagementInfo advertisers = 1;
+  message AdvertiserForSeatManagementInfo {
+    required int64 advertiser_id = 1;
+    required string salesforce_id = 2;
+    required string name = 3;
+    optional string description = 4;
+    required bool has_buyer_seat = 5;
+  }
+}
+// @section Advertiser
+message SearchAgenciesForSeatManagementRequest {
+  required SecurityContext security_context = 1;
+  repeated int64 office_ids = 2;
+  optional string search = 3;
+  // The page number is set to 0 if not specified
+  // The page size is set to 100 if not specified
+  required Page page = 4;
+}
+// @section Advertiser
+message SearchAgenciesForSeatManagementResponse {
+  repeated AgencyForSeatManagementInfo agencies = 1;
+  message AgencyForSeatManagementInfo {
+    required int64 agency_id = 1;
+    required string salesforce_id = 2;
+    required string name = 3;
+    optional string description = 4;
+    repeated int64 offices_with_buyer_seat = 5;
+    required int64 office_id = 6;
+  }
+}
+// @section Advertiser
+message SearchBuyerSeatsRequest {
+  required SecurityContext security_context = 1;
+  required int64 office_id = 2;
+  optional string search = 3;
+  optional Filters filters = 4;
+  // The page number is set to 0 if not specified
+  // The page size is set to 100 if not specified
+  required Page page = 5;
+  message Filters {
+    optional BuyerServiceLevel service_level = 1;
+    optional BuyerSeatStatus seat_status = 2;
+    optional BuyerSeatType seat_type = 3;
+  }
+}
+// @section Advertiser
+message SearchBuyerSeatsResponse {
+  repeated BuyerSeat seats = 1;
+  required uint32 pages = 2;
+  message BuyerSeat {
+    required int64 seat_id = 1;
+    required int64 office_id = 2;
+    required string name = 3;
+    required EntityInfo entity = 4;
+    required bool existing_seat_member = 5;
+    required BuyerServiceLevel service_level = 6;
+    required BuyerSeatStatus status = 7;
+    optional MsaType msa_type = 8;
+    required double fee = 9;
+    optional google.protobuf.Timestamp created_at = 10;
+    optional string salesforce_account_id = 11;
+    optional string salesforce_contract_id = 12;
+    oneof buyer_id {
+      int64 agency_id = 13;
+      int64 advertiser_id = 14;
+    }
+  }
+  message EntityInfo {
+    required int64 entity_id = 1;
+    required BuyerSeatType type = 2;
+    required UsersCount users_count = 3;
+  }
+  message UsersCount {
+    required uint32 tam_admin = 1;
+    required uint32 tam_reporting_admin = 2;
+    required uint32 tam_user = 3;
+    required uint32 tam_reporting_user = 4;
+  }
+}
+// @section Campaign
+message SearchCampaignsEligibleForManagedServiceMigrationRequest {
+  required SecurityContext security_context = 1;
+  required int64 office_id = 2;
+  optional string search = 3;
+  // The page number is set to 0 if not specified
+  // The page size is set to 100 if not specified
+  required Page page = 4;
+}
+// @section Campaign
+message SearchCampaignsEligibleForManagedServiceMigrationResponse {
+  repeated CampaignInfo campaigns = 1;
+  message CampaignInfo {
+    required int64 id = 1;
+    required string name = 2;
+    optional int64 owner_id = 3;
+    required CampaignObjective objective = 4;
+  }
+}
+// @section Campaign
+message SearchCampaignsRequest {
+  required SecurityContext security_context = 1;
+  optional int64 office_id = 2;
+  optional string search = 3;
+  // The page number is set to 0 if not specified
+  // The page size is set to 100 if not specified
+  required Page page = 4;
+  // Include info about campaigns migrated to managed services (default is false)
+  optional bool include_managed_service_migrated_campaigns_info = 5 [default = false];
+}
+// @section Campaign
+message SearchCampaignsResponse {
+  repeated CampaignInfo campaigns = 1;
+  message CampaignInfo {
+    required int64 id = 1;
+    required int64 office_id = 2;
+    required string name = 3;
+    optional MigrationInfo migration_info = 4;
+    message MigrationInfo {
+      required string user_email = 1;
+      required CampaignMigrationReason reason = 2;
+      required string details = 3;
+      required google.protobuf.Timestamp migrated_at = 4;
+    }
+  }
+}
+// @section Commons
+message SecurityContext {
+  required int64 profile_id = 4;
+  required int64 entity_id = 5;
+  optional int64 base_profile_id = 6;
+}
+// @section Advertiser
+message SetFeeForClientSeatRequest {
+  required SecurityContext security_context = 1;
+  required int64 seat_id = 2;
+  required double fee = 3;
+  // Used to check that we don't roll back to a previous version during updates
+  required int32 salesforce_contract_version = 4;
+}
+// @section Advertiser
+message SetFeeForClientSeatResponse {
+}
+// @section Campaign
+message SynchronizeCampaignFromSalesforceOpportunityRequest {
+  required SecurityContext security_context = 1;
+  required int64 campaign_id = 2;
+}
+// @section Campaign
+message SynchronizeCampaignFromSalesforceOpportunityResponse {
+  repeated string created_line_item_ids = 1;
+}
+// @section Advertiser
+message TransitionIoBuyerSeatToManagedRequest {
+  required SecurityContext security_context = 1;
+  required int64 seat_id = 2;
+  required double managed_fee = 3;
+  required MsaType msa_type = 4;
+  required string salesforce_contract_id = 5;
+}
+// @section Advertiser
+message TransitionIoBuyerSeatToManagedResponse {
+  required int64 seat_id = 1;
+}
+// @section Advertiser
+message TransitionIoBuyerSeatToSelfServedRequest {
+  required SecurityContext security_context = 1;
+  required int64 seat_id = 2;
+  required double platform_fee = 3;
+  required MsaType msa_type = 4;
+  required string salesforce_contract_id = 5;
+}
+// @section Advertiser
+message TransitionIoBuyerSeatToSelfServedResponse {
+  required int64 seat_id = 1;
+}
+// @section Advertiser
+message TransitionManagedBuyerSeatToSelfServedRequest {
+  required SecurityContext security_context = 1;
+  required int64 seat_id = 2;
+  required double platform_fee = 3;
+}
+// @section Advertiser
+message TransitionManagedBuyerSeatToSelfServedResponse {
+  required int64 seat_id = 1;
+}
+// @section Advertiser
+message TransitionSelfServedBuyerSeatToManagedRequest {
+  required SecurityContext security_context = 1;
+  required int64 seat_id = 2;
+  required double managed_fee = 3;
+}
+// @section Advertiser
+message TransitionSelfServedBuyerSeatToManagedResponse {
+  required int64 seat_id = 1;
+}
+// @section Advertiser
+message UpdateBuyerSeatFeeRequest {
+  required SecurityContext security_context = 1;
+  required int64 seat_id = 2;
+  required double fee = 3;
+}
+// @section Advertiser
+message UpdateBuyerSeatFeeResponse {
+}
+// @section Account
+message UpdateBuyerSeatNameRequest {
+  required SecurityContext security_context = 1;
+  required int64 seat_id = 2;
+  required string name = 3;
+}
+// @section Account
+message UpdateBuyerSeatNameResponse {
+}
+// @section Account
+enum AccountType {
+  ACCOUNT_TYPE_INTERNAL_EMPLOYEE = 1;
+  ACCOUNT_TYPE_PUBLISHER = 2;
+  ACCOUNT_TYPE_ADVERTISER = 3;
+  ACCOUNT_TYPE_AGENCY = 4;
+}
+// @section Advertiser
+enum AdvertiserFirstPartySegmentProvider {
+  ADVERTISER_FIRST_PARTY_SEGMENT_PROVIDER_NIELSEN = 1;
+  ADVERTISER_FIRST_PARTY_SEGMENT_PROVIDER_LIVERAMP = 2;
+  ADVERTISER_FIRST_PARTY_SEGMENT_PROVIDER_BLUEKAI = 3;
+  ADVERTISER_FIRST_PARTY_SEGMENT_PROVIDER_NEUSTAR = 4;
+  ADVERTISER_FIRST_PARTY_SEGMENT_PROVIDER_SALESFORCE = 5;
+  ADVERTISER_FIRST_PARTY_SEGMENT_PROVIDER_RETARGETLY = 7;
+  reserved 6;
+}
+// @section Campaign
+enum AdvertisingSolutionId {
+  ADVERTISING_SOLUTION_ID_AWARENESS = 1;
+  ADVERTISING_SOLUTION_ID_TA_CLICKS = 2;
+  ADVERTISING_SOLUTION_ID_TA_VISITS = 3;
+  ADVERTISING_SOLUTION_ID_TA_MIXED = 4;
+  ADVERTISING_SOLUTION_ID_WEBSITE_CONVERSIONS = 5;
+  ADVERTISING_SOLUTION_ID_SEAMLESS_COMMERCE = 6;
+  ADVERTISING_SOLUTION_ID_TA_CLICKS_GUARANTEED_CPC = 7;
+  ADVERTISING_SOLUTION_ID_TA_VISITS_GUARANTEED_CPC = 8;
+}
+// @section Advertiser
+enum BuyerSeatStatus {
+  BUYER_SEAT_STATUS_ENABLED = 1;
+  BUYER_SEAT_STATUS_DISABLED = 2;
+  BUYER_SEAT_STATUS_PENDING_CLIENT_INPUT = 3;
+  BUYER_SEAT_STATUS_PENDING_TEADS_INPUT = 4;
+}
+// @section Advertiser
+enum BuyerSeatStatusFlag {
+  BUYER_SEAT_STATUS_FLAG_NOT_REQUIRED = 0;
+  BUYER_SEAT_STATUS_FLAG_REQUIRED = 1;
+  BUYER_SEAT_STATUS_FLAG_COMPLETED = 2;
+}
+// @section Advertiser
+enum BuyerSeatType {
+  BUYER_SEAT_TYPE_ADVERTISER = 1;
+  BUYER_SEAT_TYPE_AGENCY = 2;
+}
+// @section Advertiser
+enum BuyerServiceLevel {
+  BUYER_SERVICE_LEVEL_MANAGED = 1;
+  BUYER_SERVICE_LEVEL_SELF_SERVED = 2;
+  BUYER_SERVICE_LEVEL_IO = 3;
+  BUYER_SERVICE_LEVEL_INTERNAL = 4;
+  BUYER_SERVICE_LEVEL_CLIENT = 5;
+}
+// @section Campaign
+enum CampaignMigrationReason {
+  CAMPAIGN_MIGRATION_REASON_TARGETING_NOT_AVAILABLE = 0; // deprecated
+  CAMPAIGN_MIGRATION_REASON_AUCTION_TYPE_NOT_AVAILABLE = 1; // deprecated
+  CAMPAIGN_MIGRATION_REASON_BILLING_EVENT_NOT_AVAILABLE = 2; // deprecated
+  CAMPAIGN_MIGRATION_REASON_PLAYER_MODE_NOT_AVAILABLE = 3; // deprecated
+  CAMPAIGN_MIGRATION_REASON_OTHER = 5;
+  CAMPAIGN_MIGRATION_REASON_IAS_PREBID = 6; // deprecated
+  CAMPAIGN_MIGRATION_REASON_MOAT_100_PERCENT = 7; // deprecated
+  CAMPAIGN_MIGRATION_REASON_RETARGETING_SEGMENTS = 8; // deprecated
+  CAMPAIGN_MIGRATION_REASON_OFFICE_PACK = 9; // deprecated
+  CAMPAIGN_MIGRATION_REASON_FORMAT_POSITION = 10;
+  CAMPAIGN_MIGRATION_REASON_CUSTOM_BRAND_SAFETY = 11; // deprecated
+  CAMPAIGN_MIGRATION_REASON_CUSTOM_AUDIENCE = 12; // deprecated
+  CAMPAIGN_MIGRATION_REASON_TAM_ISSUE = 13;
+  CAMPAIGN_MIGRATION_REASON_ALTICE_DATA_SEGMENTS = 14; // deprecated
+  CAMPAIGN_MIGRATION_REASON_CREATIVE_STUDIO_UNIT = 15; // deprecated
+  CAMPAIGN_MIGRATION_REASON_CUSTOM_BILLING_EVENT = 16; // deprecated
+  CAMPAIGN_MIGRATION_REASON_PLAYER_MODE = 17; // deprecated
+  CAMPAIGN_MIGRATION_REASON_ADDED_VALUE = 18; // deprecated
+  CAMPAIGN_MIGRATION_REASON_REMARKETING_ON_CREATIVE_EVENT = 19; // deprecated
+  CAMPAIGN_MIGRATION_REASON_LOOKALIKE_SEGMENTS = 20; // deprecated
+  CAMPAIGN_MIGRATION_REASON_GEO_POSTAL_CODES = 21; // deprecated
+  CAMPAIGN_MIGRATION_REASON_CARRIER_PROVIDER = 22; // deprecated
+  CAMPAIGN_MIGRATION_REASON_AUDIENCES_STANDARD_TO_ACCURACY = 23; // deprecated
+  CAMPAIGN_MIGRATION_REASON_CREATIVE_HOURLY_FLIGHTING = 24; // deprecated
+  CAMPAIGN_MIGRATION_REASON_INNOVATION_TEST = 25;
+  CAMPAIGN_MIGRATION_REASON_NOT_SUPPORTED_TRAFFIC_ACQUISITION_CREATIVE = 26;
+  CAMPAIGN_MIGRATION_REASON_TRAFFIC_ACQUISITION_REACHCAST = 27; // deprecated
+  CAMPAIGN_MIGRATION_REASON_CAMPAIGN_DATE_TO_THE_FUTURE = 28;
+  CAMPAIGN_MIGRATION_REASON_CAMPAIGN_TIMEZONE = 29;
+  CAMPAIGN_MIGRATION_REASON_CTV_INSTREAM_SUPPLY_TARGETING = 30;
+  CAMPAIGN_MIGRATION_REASON_GUARANTEED_SELF_SERVE_CAMPAIGN = 31;
+  CAMPAIGN_MIGRATION_REASON_PLAYER_VIEWABILITY = 32;
+  CAMPAIGN_MIGRATION_REASON_TRACKING_PIXEL_ON_CLICK_EVENT = 33;
+  CAMPAIGN_MIGRATION_REASON_VIRTUAL_PRICE_FOR_MANAGED_CAMPAIGN = 34;
+  CAMPAIGN_MIGRATION_REASON_HOURLY_FLIGHTING = 35;
+  CAMPAIGN_MIGRATION_REASON_ATTENTION_LUMEN_NO_SAMPLING = 36;
+  reserved 4;
+}
+// @section Campaign
+enum CampaignObjective {
+  CAMPAIGN_OBJECTIVE_BRANDING = 0;
+  CAMPAIGN_OBJECTIVE_TRAFFIC_ACQUISITION = 1;
+  CAMPAIGN_OBJECTIVE_SOCIAL = 2;
+  CAMPAIGN_OBJECTIVE_CONVERSIONS = 3;
+}
+// @section Campaign
+enum CustomTargetingEnvironmentChannel {
+  CUSTOM_TARGETING_ENVIRONMENT_CHANNEL_WEB = 1;
+  CUSTOM_TARGETING_ENVIRONMENT_CHANNEL_CTV = 2;
+}
+// @section Campaign
+enum CustomTargetingRuleAudiencesAccuracyLevel {
+  CUSTOM_TARGETING_RULE_AUDIENCES_ACCURACY_LEVEL_HIGH = 1;
+  CUSTOM_TARGETING_RULE_AUDIENCES_ACCURACY_LEVEL_MEDIUM = 2;
+  CUSTOM_TARGETING_RULE_AUDIENCES_ACCURACY_LEVEL_LOW = 3;
+}
+// @section Campaign
+enum CustomTargetingRuleAudiencesDeliveryType {
+  CUSTOM_TARGETING_RULE_AUDIENCES_DELIVERY_TYPE_HIGH_ACCURACY = 2;
+  CUSTOM_TARGETING_RULE_AUDIENCES_DELIVERY_TYPE_ACCURACY = 3;
+  CUSTOM_TARGETING_RULE_AUDIENCES_DELIVERY_TYPE_STANDARD = 4;
+  CUSTOM_TARGETING_RULE_AUDIENCES_DELIVERY_TYPE_REACH = 5;
+  reserved 1;
+}
+// @section Account
+enum EntityType {
+  ENTITY_TYPE_OFFICE = 1;
+  ENTITY_TYPE_PLATFORM = 2;
+  ENTITY_TYPE_SELF_SERVED = 3;
+  ENTITY_TYPE_MANAGED_SERVICES = 4;
+  ENTITY_TYPE_AGENCY = 5;
+  ENTITY_TYPE_ADVERTISER = 6;
+  ENTITY_TYPE_ADNETWORK = 7;
+  ENTITY_TYPE_UNKNOWN = 8;
+}
+// @section Campaign
+enum InsertionOrderLineAuctionType {
+  INSERTION_ORDER_LINE_AUCTION_TYPE_FIXED = 1;
+  INSERTION_ORDER_LINE_AUCTION_TYPE_DYNAMIC = 2;
+}
+// @section Campaign
+enum InsertionOrderLineBillingModel {
+  INSERTION_ORDER_LINE_BILLING_MODEL_CPM = 1;
+  INSERTION_ORDER_LINE_BILLING_MODEL_VCPM = 2;
+  INSERTION_ORDER_LINE_BILLING_MODEL_CPCV = 3;
+  INSERTION_ORDER_LINE_BILLING_MODEL_CPC = 4;
+  INSERTION_ORDER_LINE_BILLING_MODEL_CPV = 5;
+}
+// @section Campaign
+enum InsertionOrderLineCreativeTypeFamily {
+  INSERTION_ORDER_LINE_CREATIVE_TYPE_FAMILY_VIDEO = 1;
+  INSERTION_ORDER_LINE_CREATIVE_TYPE_FAMILY_DISPLAY = 2;
+}
+// @section Advertiser
+enum MsaType {
+  MSA_TYPE_DIGITAL = 1;
+  MSA_TYPE_PAPER = 2;
+}
+// @section Account
+enum ProfileStatus {
+  PROFILE_STATUS_ENABLED = 1;
+  PROFILE_STATUS_DISABLED = 2;
+  PROFILE_STATUS_DELETED = 3;
+  PROFILE_STATUS_WAITING_PASSWORD = 4;
+  PROFILE_STATUS_FIRST_LOGIN = 5;
+}
+// @section Advertiser
+enum SeatFeature {
+  SEAT_FEATURE_MULTIPLE_PIXELS = 0;
+  SEAT_FEATURE_SHARE_WITH_ADVERTISERS = 1;
+  SEAT_FEATURE_PREFER_VIEW_TO_PLAY_START_MODE = 2;
+  SEAT_FEATURE_ACCURACY_LEVELS = 4;
+  SEAT_FEATURE_AGENCY_FEE = 5;
+  SEAT_FEATURE_CUSTOM_AUDIENCE_ALTICE_US = 6;
+  SEAT_FEATURE_CUSTOM_CREATIVES_FOR_PERFORMANCE = 7;
+  SEAT_FEATURE_LUMEN = 8;
+  SEAT_FEATURE_CUSTOM_AUDIENCE_SKP = 9;
+  SEAT_FEATURE_CUSTOM_AUDIENCE_CROSSIX = 10;
+  SEAT_FEATURE_CUSTOM_AUDIENCE_ALTICE_FR = 11;
+  SEAT_FEATURE_REMARKETING_SEGMENTATION_ACCESS = 12;
+  SEAT_FEATURE_CPV = 13;
+  SEAT_FEATURE_PLAYER_MODE_SELECTION_FOR_BRANDING = 14;
+  SEAT_FEATURE_PLAYER_MODE_SELECTION_FOR_BRANDFORMANCE = 15;
+  SEAT_FEATURE_LOOKALIKE_SEGMENTATION_ACCESS = 16;
+  SEAT_FEATURE_CUSTOM_AUDIENCE_THIRD_PARTY_DATA_ACCESS = 17;
+  SEAT_FEATURE_HAS_OPTED_IN_AD_ASSISTANT = 18;
+  SEAT_FEATURE_PLAYER_MODE_SELECTION_FOR_BRANDING_CPCV = 19;
+  reserved 3;
+}
+service CommandService {
+  // @section Commercial
+  rpc AcknowledgeCampaignSkeletonCreationToSalesforce ( AcknowledgeCampaignSkeletonCreationToSalesforceRequest ) returns ( AcknowledgeCampaignSkeletonCreationToSalesforceResponse );
+  // @section Advertiser
+  // Activate a given seat feature for a given seat
+  rpc ActivateFeatureForSeat ( ActivateFeatureForSeatRequest ) returns ( ActivateFeatureForSeatResponse );
+  // @section Advertiser
+  // Whitelist a first party segment for a given seat
+  rpc AddFirstPartySegmentToWhitelistForSeat ( AddFirstPartySegmentToWhitelistForSeatRequest ) returns ( AddFirstPartySegmentToWhitelistForSeatResponse );
+  // @section Brand Safety
+  // Adds a Grapeshot Brand Suitability segment for a given seat
+  rpc AddGrapeshotBrandSuitabilitySegmentForBuyerSeat ( AddGrapeshotBrandSuitabilitySegmentForBuyerSeatRequest ) returns ( AddGrapeshotBrandSuitabilitySegmentForBuyerSeatResponse );
+  // @section Account
+  // Create the buyer entity for agency/advertiser
+  rpc CreateBuyerEntity ( CreateBuyerEntityRequest ) returns ( CreateBuyerEntityResponse );
+  // @section Campaign
+  rpc CreateCampaignSkeletonsFromSalesforceOpportunity ( CreateCampaignSkeletonsFromSalesforceOpportunityRequest ) returns ( CreateCampaignSkeletonsFromSalesforceOpportunityResponse );
+  // @section Advertiser
+  // Create a self served client (advertiser or agency) buyer seat for a salesforce advertiser/agency entity in a specific office
+  rpc CreateClientSeatForBuyer ( CreateClientSeatForBuyerRequest ) returns ( CreateClientSeatForBuyerResponse );
+  // @section Campaign
+  rpc CreateCustomTargetingRuleForCampaign ( CreateCustomTargetingRuleForCampaignRequest ) returns ( CreateCustomTargetingRuleForCampaignResponse );
+  // @section Advertiser
+  // Create an internal buyer seat for a salesforce advertiser/agency entity in a specific office
+  rpc CreateInternalSeatForBuyer ( CreateInternalSeatForBuyerRequest ) returns ( CreateInternalSeatForBuyerResponse );
+  // @section Advertiser
+  // Create an IO Buyer seat for a salesforce advertiser/agency entity in a specific office
+  rpc CreateIoBuyerSeatForEntity ( CreateIoBuyerSeatForEntityRequest ) returns ( CreateIoBuyerSeatForEntityResponse );
+  // @section Advertiser
+  // Create a Managed Buyer seat for a salesforce advertiser/agency entity in a specific office
+  rpc CreateManagedBuyerSeatForEntity ( CreateManagedBuyerSeatForEntityRequest ) returns ( CreateManagedBuyerSeatForEntityResponse );
+  // @section Advertiser
+  // Create a Self-Served Buyer seat for a salesforce advertiser/agency entity in a specific office
+  rpc CreateSelfServedBuyerSeatForEntity ( CreateSelfServedBuyerSeatForEntityRequest ) returns ( CreateSelfServedBuyerSeatForEntityResponse );
+  // @section Advertiser
+  // Deactivate a given seat feature for a given seat
+  rpc DeactivateFeatureForSeat ( DeactivateFeatureForSeatRequest ) returns ( DeactivateFeatureForSeatResponse );
+  // @section Brand Safety
+  // Deletes a list of Grapeshot Brand Suitability segments for a given seat
+  rpc DeleteGrapeshotBrandSuitabilitySegmentsForBuyerSeat ( DeleteGrapeshotBrandSuitabilitySegmentsForBuyerSeatRequest ) returns ( DeleteGrapeshotBrandSuitabilitySegmentsForBuyerSeatResponse );
+  // @section Advertiser
+  // Disables a Buyer seat if the current seat status is not already disabled
+  rpc DisableBuyerSeat ( DisableBuyerSeatRequest ) returns ( DisableBuyerSeatResponse );
+  // @section Advertiser
+  // Enables a Buyer seat if the current seat status is not already enabled
+  rpc EnableBuyerSeat ( EnableBuyerSeatRequest ) returns ( EnableBuyerSeatResponse );
+  // @section Account
+  // Grant Teads Ad Manager admin role ("Connect Admin") for a buyer
+  rpc GrantAdminRoleForBuyer ( GrantAdminRoleForBuyerRequest ) returns ( GrantAdminRoleForBuyerResponse );
+  // @section Advertiser
+  // Mark teads finance approval filled for Buyer seat. If all required flags are marked then it updates seat status to enabled
+  rpc MarkTeadsFinanceApprovalFilledForSeat ( MarkTeadsFinanceApprovalFilledForSeatRequest ) returns ( MarkTeadsFinanceApprovalFilledForSeatResponse );
+  // @section Campaign
+  rpc MigrateCampaignToManagedService ( MigrateCampaignToManagedServiceRequest ) returns ( MigrateCampaignToManagedServiceResponse );
+  // @section Advertiser
+  // Remove a first party segment from its seat's whitelist
+  rpc RemoveFirstPartySegmentFromWhitelistForSeat ( RemoveFirstPartySegmentFromWhitelistForSeatRequest ) returns ( RemoveFirstPartySegmentFromWhitelistForSeatResponse );
+  // @section Account
+  // Revoke Teads Ad Manager admin roles ("Connect Admin", "Client Dashboard Admin") for a buyer
+  rpc RevokeAdminRoleForBuyer ( RevokeAdminRoleForBuyerRequest ) returns ( RevokeAdminRoleForBuyerResponse );
+  // @section Advertiser
+  rpc SetFeeForClientSeat ( SetFeeForClientSeatRequest ) returns ( SetFeeForClientSeatResponse );
+  // @section Campaign
+  rpc SynchronizeCampaignFromSalesforceOpportunity ( SynchronizeCampaignFromSalesforceOpportunityRequest ) returns ( SynchronizeCampaignFromSalesforceOpportunityResponse );
+  // @section Advertiser
+  // Transition an IO Buyer seat to a Managed Buyer seat
+  rpc TransitionIoBuyerSeatToManaged ( TransitionIoBuyerSeatToManagedRequest ) returns ( TransitionIoBuyerSeatToManagedResponse );
+  // @section Advertiser
+  // Transition an IO Buyer seat to a Self-Served Buyer seat
+  rpc TransitionIoBuyerSeatToSelfServed ( TransitionIoBuyerSeatToSelfServedRequest ) returns ( TransitionIoBuyerSeatToSelfServedResponse );
+  // @section Advertiser
+  // Transition a Managed Buyer seat to a Self-Served Buyer seat
+  rpc TransitionManagedBuyerSeatToSelfServed ( TransitionManagedBuyerSeatToSelfServedRequest ) returns ( TransitionManagedBuyerSeatToSelfServedResponse );
+  // @section Advertiser
+  // Transition a Self-Served Buyer seat to a Managed Buyer seat
+  rpc TransitionSelfServedBuyerSeatToManaged ( TransitionSelfServedBuyerSeatToManagedRequest ) returns ( TransitionSelfServedBuyerSeatToManagedResponse );
+  // @section Advertiser
+  rpc UpdateBuyerSeatFee ( UpdateBuyerSeatFeeRequest ) returns ( UpdateBuyerSeatFeeResponse );
+  // @section Account
+  rpc UpdateBuyerSeatName ( UpdateBuyerSeatNameRequest ) returns ( UpdateBuyerSeatNameResponse );
+}
+service QueryService {
+  // @section Campaign
+  rpc CanAccountEditCampaign ( CanAccountEditCampaignRequest ) returns ( CanAccountEditCampaignResponse );
+  // @section Account
+  // Return all active accounts related to a given profile
+  rpc FindActiveAccountsForProfile ( FindActiveAccountsForProfileRequest ) returns ( FindActiveAccountsForProfileResponse );
+  // @section Advertiser
+  rpc FindBuyerPixelsForAdvertiser ( FindBuyerPixelsForAdvertiserRequest ) returns ( FindBuyerPixelsForAdvertiserResponse );
+  // @section Advertiser
+  // Returns seat for specified entity_id
+  rpc FindBuyerSeatForEntity ( FindBuyerSeatForEntityRequest ) returns ( FindBuyerSeatForEntityResponse );
+  // @section Advertiser
+  // Returns seat for specified salesforce seat id
+  rpc FindBuyerSeatForSalesforceSeat ( FindBuyerSeatForSalesforceSeatRequest ) returns ( FindBuyerSeatForSalesforceSeatResponse );
+  // @section Campaign
+  rpc FindCampaignsForSalesforceOpportunity ( FindCampaignsForSalesforceOpportunityRequest ) returns ( FindCampaignsForSalesforceOpportunityResponse );
+  // @section Campaign
+  rpc FindCampaignsForSalesforceOpportunityAndProfile ( FindCampaignsForSalesforceOpportunityAndProfileRequest ) returns ( FindCampaignsForSalesforceOpportunityAndProfileResponse );
+  // @section Brand Safety
+  // Returns a list of Grapeshot brand suitability segments in common for a given list of buyer seats
+  rpc FindGrapeshotBrandSuitabilitySegmentsInCommonForBuyerSeats ( FindGrapeshotBrandSuitabilitySegmentsInCommonForBuyerSeatsRequest ) returns ( FindGrapeshotBrandSuitabilitySegmentsInCommonForBuyerSeatsResponse );
+  // @section Campaign
+  rpc FindLineItemsForCampaign ( FindLineItemsForCampaignRequest ) returns ( FindLineItemsForCampaignResponse );
+  // @section Account
+  rpc FindProfileForEmailAnonymously ( FindProfileForEmailAnonymouslyRequest ) returns ( FindProfileForEmailAnonymouslyResponse );
+  // @section Advertiser
+  // Return a list of a whitelisted first party segments for a given seat
+  rpc FindWhitelistedAdvertiserFirstPartySegmentsForSeat ( FindWhitelistedAdvertiserFirstPartySegmentsForSeatRequest ) returns ( FindWhitelistedAdvertiserFirstPartySegmentsForSeatResponse );
+  // @section Account
+  rpc GetAccount ( GetAccountRequest ) returns ( GetAccountResponse );
+  // @section Users Data
+  rpc GetAdvertiserFirstPartySegments ( GetAdvertiserFirstPartySegmentsRequest ) returns ( GetAdvertiserFirstPartySegmentsResponse );
+  // @section Campaign
+  rpc GetAllCustomTargetingReasons ( GetAllCustomTargetingReasonsRequest ) returns ( GetAllCustomTargetingReasonsResponse );
+  // @section Advertiser
+  // Returns seat for specified id
+  rpc GetBuyerSeat ( GetBuyerSeatRequest ) returns ( GetBuyerSeatResponse );
+  // @section Account
+  // Return a specific office
+  rpc GetOffice ( GetOfficeRequest ) returns ( GetOfficeResponse );
+  // @section Commercial
+  rpc GetSalesforceOpportunity ( GetSalesforceOpportunityRequest ) returns ( GetSalesforceOpportunityResponse );
+  // @section Campaign
+  rpc ListCustomTargetingRulesForCampaign ( ListCustomTargetingRulesForCampaignRequest ) returns ( ListCustomTargetingRulesForCampaignResponse );
+  // @section Account
+  // Return all offices
+  rpc ListOffices ( ListOfficesRequest ) returns ( ListOfficesResponse );
+  // @section Users Data
+  rpc SearchAdvertiserFirstPartySegments ( SearchAdvertiserFirstPartySegmentsRequest ) returns ( SearchAdvertiserFirstPartySegmentsResponse );
+  // @section Advertiser
+  // Search advertisers for Buyer seat management using a keyword
+  // The keyword will be searched in advertiser id, advertiser name, advertiser salesforce id
+  rpc SearchAdvertisersForSeatManagement ( SearchAdvertisersForSeatManagementRequest ) returns ( SearchAdvertisersForSeatManagementResponse );
+  // @section Advertiser
+  // Search agencies in specific offices for Buyer seat management using a keyword
+  // The keyword will be searched in agency id, agency name, agency salesforce id
+  rpc SearchAgenciesForSeatManagement ( SearchAgenciesForSeatManagementRequest ) returns ( SearchAgenciesForSeatManagementResponse );
+  // @section Advertiser
+  // Search buyer seats in a specific office or in all offices if office_id = 5000 and user belongs to entity 5000
+  // The keyword will be searched in seat name, entity id, agency id, advertiser id, salesforce id
+  rpc SearchBuyerSeats ( SearchBuyerSeatsRequest ) returns ( SearchBuyerSeatsResponse );
+  // @section Campaign
+  // Search campaigns
+  // The keyword will be searched in campaign id, name. Multiple words separated by space will be treated with a logical AND.
+  rpc SearchCampaigns ( SearchCampaignsRequest ) returns ( SearchCampaignsResponse );
+  // @section Campaign
+  // Search eligible campaigns for migration to Managed
+  // The keyword will be searched in campaign id, name. Multiple words separated by space will be treated with a logical AND.
+  rpc SearchCampaignsEligibleForManagedServiceMigration ( SearchCampaignsEligibleForManagedServiceMigrationRequest ) returns ( SearchCampaignsEligibleForManagedServiceMigrationResponse );
+}
